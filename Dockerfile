@@ -15,12 +15,6 @@ RUN apt install tzdata -y && \
     apt remove tzdata -y
 
 
-# RUN corepack enable && \
-#     corepack prepare pnpm@latest-8 --activate && \
-#     && \
-#     apt-get update -y && apt-get install -y openssl
-
-
 WORKDIR /tmp
 ENV SHELL /bin/bash
 # ADD mirrorlist /etc/pacman.d/mirrorlist
@@ -85,8 +79,15 @@ RUN echo "rvm_silence_path_mismatch_check_flag=1" >> /root/.rvmrc
 RUN git config --global core.editor "code --wait"; \
     git config --global init.defaultBranch main
 
-
-
+RUN wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz -O go.tar.gz && \
+    tar -xzvf go.tar.gz -C /usr/local
+ENV GOROOT /usr/local/go
+ENV PATH $GOROOT/bin:$PATH
+RUN go env -w GO111MODULE=on &&\
+    go env -w GOPROXY=https://goproxy.cn,direct &&\
+    go install github.com/silenceper/gowatch@latest &&\
+    go install golang.org/x/tools/gopls@latest
+# end
 
 
 
